@@ -1,12 +1,14 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const page = () => {
   const [title, setTitle] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [titleError, setTitleError] = useState(false);
   const [sentStatus, setSentStatus] = useState(false);
-  console.log(isCompleted);
+  // console.log(isCompleted);
+  const router = useRouter();
 
   const sendTodo = (e) => {
     e.preventDefault();
@@ -26,6 +28,7 @@ const page = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data), setSentStatus(true);
+        router.push("/");
       })
       .catch((err) => console.log(err));
   };

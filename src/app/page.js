@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Swal from "sweetalert2";
 
 export default function Home() {
   const [todos, setTodos] = useState(null);
 
-  useEffect(() => {
+  const fetchTodos = () => {
     fetch("http://localhost:8080/api/todos")
       .then((res) => res.json())
       .then((data) => {
@@ -13,7 +14,38 @@ export default function Home() {
         setTodos(data.data);
       })
       .catch((err) => console.log("Something went wrong: ", err));
-  }, []);
+  };
+
+  const deleteTodo = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8080/api/todos/${id}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            fetchTodos();
+          })
+          .catch((err) => console.log("Something went wrong: ", err));
+        Swal.fire({
+          title: "Deleted!",
+          text: "Todo has been deleted.",
+          icon: "success",
+        });
+      }
+    });
+  };
+
+  useEffect(fetchTodos, []);
 
   return (
     <div className="flex justify-center pt-12">
@@ -102,6 +134,7 @@ export default function Home() {
                     strokeWidth={1.5}
                     stroke="currentColor"
                     className="size-5 cursor-pointer"
+                    onClick={() => deleteTodo(todo._id)}
                   >
                     <path
                       strokeLinecap="round"

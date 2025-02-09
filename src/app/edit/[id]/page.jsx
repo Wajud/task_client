@@ -1,40 +1,39 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const page = () => {
   const [todo, setTodo] = useState(null);
   const [title, setTitle] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
-  const [titleError, setTitleError] = useState(false);
-  const [sentStatus, setSentStatus] = useState(false);
 
-  console.log(isCompleted);
+  const [sentStatus, setSentStatus] = useState(false);
 
   const pathName = usePathname();
   const id = pathName.split("/")[2];
-  console.log(id);
+
+  const router = useRouter();
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/todos/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        setTodo(data.data);
+        console.log("data: ", data.data);
+        setTodo(data.data[0]);
+        setTitle(data.data[0].title);
+        setIsCompleted(data.data[0].isCompleted);
       })
       .catch((err) => console.log("Something went wrong: ", err));
   }, []);
 
   const sendTodo = (e) => {
     e.preventDefault();
-    if (!title) {
-      setTitleError(true);
-      setTimeout(() => setTitleError(false), 2000);
-      return;
-    }
-    const todo = { title, isCompleted };
-    fetch("http://localhost:8080/api/todos", {
-      method: "POST",
+
+    const todo = { title: title, isCompleted: isCompleted };
+    console.log(todo);
+
+    fetch(`http://localhost:8080/api/todos/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -42,10 +41,15 @@ const page = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data), setSentStatus(true);
+        // console.log(data);
+        setSentStatus(true);
+
+        setTimeout(() => router.push("/"), 1000);
       })
       .catch((err) => console.log(err));
   };
+
+  console.log("isCompleted: ", isCompleted);
   return (
     <div className="flex justify-center  pt-12">
       {todo && (
@@ -59,25 +63,20 @@ const page = () => {
             className="px-2 py-1 block w-96 border border-gray-300 focus:outline rounded-sm mb-2"
             onChange={(e) => setTitle(e.target.value)}
           />
-          {/* {titleError && (
-      <p className="text-center text-red-500 -mt-2 mb-2">
-      Todo title must be set
-      </p>
-   )} */}
+
           <div>
             <input
               type="checkbox"
               id="isCompleted"
-              value={todo.isCompleted}
+              value={isCompleted}
               onChange={() => {
-                setIsCompleted(!todo.isCompleted);
-                console.log("isCompleted: ", todo.isCompleted);
+                setIsCompleted((isCompleted) => !isCompleted);
               }}
               className="mb-2 hidden"
             />
             <label htmlFor="isCompleted" className="flex gap-1 text-blue-500">
               {" "}
-              {todo.isCompleted ? (
+              {isCompleted ? (
                 <svg
                   width="20"
                   height="20"
@@ -122,14 +121,16 @@ const page = () => {
                   />
                 </svg>
               )}
-              completed
+              complete
             </label>
           </div>
           <button className="block w-fit mx-auto mt-10 px-4 py-1 bg-green-500 rounded-sm text-white text-lg hover:shadow-md">
             Save
           </button>
           {sentStatus && (
-            <p className="text-center text-green-500 mb-2">Todo updated.</p>
+            <p className="text-center text-green-500 mt-1 mb-2 text-sm">
+              Todo updated.
+            </p>
           )}
         </form>
       )}

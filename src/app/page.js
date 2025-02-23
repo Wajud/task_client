@@ -7,7 +7,7 @@ export default function Home() {
   const [todos, setTodos] = useState(null);
 
   const fetchTodos = () => {
-    fetch("http://localhost:8080/api/todos")
+    fetch("https://task-api-0t4e.onrender.com/api/todos")
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -27,7 +27,7 @@ export default function Home() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:8080/api/todos/${id}`, {
+        fetch(`https://task-api-0t4e.onrender.com/api/todos/${id}`, {
           method: "DELETE",
         })
           .then((res) => res.json())

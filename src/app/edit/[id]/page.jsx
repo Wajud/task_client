@@ -15,7 +15,7 @@ const page = () => {
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/todos/${id}`)
+    fetch(`https://task-api-0t4e.onrender.com/api/todos/${id}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("data: ", data.data);
@@ -32,7 +32,7 @@ const page = () => {
     const todo = { title: title, isCompleted: isCompleted };
     console.log(todo);
 
-    fetch(`http://localhost:8080/api/todos/${id}`, {
+    fetch(`https://task-api-0t4e.onrender.com/api/todos/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

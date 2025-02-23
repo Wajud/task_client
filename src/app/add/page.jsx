@@ -18,7 +18,7 @@ const page = () => {
       return;
     }
     const todo = { title, isCompleted };
-    fetch("http://localhost:8080/api/todos", {
+    fetch("https://task-api-0t4e.onrender.com/api/todos", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
